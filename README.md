@@ -31,6 +31,7 @@ http://localhost:8000/predict
   "radio": 100,
   "newspaper": 50
 }
+```
 
 Contribución
 Si deseas contribuir, ¡estamos abiertos a sugerencias y mejoras! Siéntete libre de abrir un issue o enviar un pull request.
