@@ -8,6 +8,7 @@ app = FastAPI()
 
 conn = sqlite3.connect('DataAdvertising.db')
 cursor = conn.cursor()
+
 model = pickle.load(open('data/advertising_model.pkl', 'rb'))
 @app.get('/')
 async def home():
@@ -64,10 +65,17 @@ async def ingest(data: dict):
                             )
             
             conn.commit()
-            return "Datos ingestados!!"
+            return {'message': 'Datos ingresados correctamente'}
         else:
             raise HTTPException(status_code=400, detail="Missing args, the input values are needed to ingest")
 
+@app.get('/predict')
+async def predict(data: dict):
+    if data and 'data' in data:
+
+        return { "prediction": (model.predict([[data["data"][0][0], data["data"][0][1], data["data"][0][2]]])[0]).round(2)} 
+    else:
+        return "Es necesario algún dato adicional"
 
 # Endpoint para reentrenar de nuevo el modelo con los posibles nuevos registros que se recojan
 @app.post("/retrain")
@@ -99,18 +107,10 @@ async def retrain():
 
     model.fit(Xtrain, ytrain)
 
-    return "Modelo reentrenado"
-
-@app.get('/predict')
-async def predict(data: dict):
-    if data and 'data' in data:
-
-        return { "prediction": (model.predict([[data["data"][0][0], data["data"][0][1], data["data"][0][2]]])[0]).round(2)} 
-    else:
-        return "Es necesario algún dato adicional"
+    return {'message': 'Modelo reentrenado correctamente.'}
 
 
 
 # Ejecutar la aplicación
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
