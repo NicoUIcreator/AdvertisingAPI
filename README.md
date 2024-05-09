@@ -35,10 +35,8 @@ http://localhost:8000/predict
 
 # Code para utilizar mi API mediante Docker
 ```json
-docker pull nicodatacreator/my_fastapifinal_app:latest
+docker pull nicodatacreator/my_fastapivol1:latest
 ```
-
-
 
 
 Contribución

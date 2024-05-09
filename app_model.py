@@ -9,7 +9,6 @@ app = FastAPI()
 conn = sqlite3.connect('DataAdvertising.db')
 cursor = conn.cursor()
 
-model = pickle.load(open('data/advertising_model.pkl', 'rb'))
 @app.get('/')
 async def home():
     return "Bienvenido a mi API del modelo advertising"
@@ -47,6 +46,7 @@ async def predictv1(tv: int = None, radio: int = None, newspaper: int = None):
     if tv is None or radio is None or newspaper is None:
         raise HTTPException(status_code=400, detail="Missing args, the input values are needed to predict")
     else:
+        model = pickle.load(open('data/advertising_model.pkl', 'rb'))
         prediction = model.predict([[tv, radio, newspaper]])
         return {"prediction": round(prediction[0], 2)}
     
@@ -72,6 +72,7 @@ async def ingest(data: dict):
 @app.get('/predict')
 async def predict(data: dict):
     if data and 'data' in data:
+        model = pickle.load(open('data/advertising_model.pkl', 'rb'))
 
         return { "prediction": (model.predict([[data["data"][0][0], data["data"][0][1], data["data"][0][2]]])[0]).round(2)} 
     else:
@@ -104,8 +105,11 @@ async def retrain():
 
     Xtrain = df[['tv','radio','newspaper']]
     ytrain = df['sales']
+    model = pickle.load(open('data/advertising_model.pkl', 'rb'))
 
     model.fit(Xtrain, ytrain)
+    with open('data/advertising_model.pkl', 'wb') as file:
+        pickle.dump(model,file)
 
     return {'message': 'Modelo reentrenado correctamente.'}
 
